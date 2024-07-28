@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'info.solidsoft.pitest' version '1.15.0'
+    id 'jacoco'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}
+
+dependencies {
+    // Lombok because Java sucks badly
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+    // Spock test dependencies
+    testImplementation 'org.spockframework:spock-core:2.4-M1-groovy-4.0'
+    // Junit dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Matchers
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+}
+
+pitest {
+    junit5PluginVersion = '1.0.0'
+    targetClasses = ['io.github.rkeeves.service.*']
+    threads = 4
+    outputFormats = ['HTML']
+    timestampedReports = false
+}
